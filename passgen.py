@@ -56,7 +56,12 @@ def passwdgen(passlen: int, usedigits: bool, uselower: bool, useupper: bool, use
 
 
 class GUI:
+    """
+    Handles the GUI interface
+    """    
     def __init__(self):
+        """_summary_
+        """        
         # root window
         self.root = Tk()
         self.root.title("Password Generator")
