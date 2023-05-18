@@ -1,7 +1,23 @@
 from tkinter import *
 import random, string, pyperclip
 
+
 def passwdgen(passlen: int, usedigits: bool, uselower: bool, useupper: bool, usespecial: bool, firstAlfaNum: bool, hideAmbiguous: bool):
+    """
+    Generates a password of the desired length based on the passed parameters.
+
+    Args:
+        passlen (int): password length
+        usedigits (bool): should the password use [0-9]
+        uselower (bool): should the password use [a-z]
+        useupper (bool): should the password use [A-Z]
+        usespecial (bool): shoudl the password use special characters
+        firstAlfaNum (bool): Does the first digit of the password need to be alfanumeric (not symbol)
+        hideAmbiguous (bool): Should characters that can be misread be dropped.
+
+    Returns:
+        string: generated_password
+    """
     random.seed()
     
     output = ""
