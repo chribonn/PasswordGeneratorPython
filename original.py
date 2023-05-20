@@ -2,17 +2,17 @@ from tkinter import *
 import random, string, pyperclip
 
 
-def passwdgen(passLen: int, useDigits: bool, useLower: bool, useUpper: bool, useSpecial: bool, firstAlfaNum: bool, hideAmbiguous: bool):
+def passwdgen(passlen: int, usedigits: bool, uselower: bool, useupper: bool, usespecial: bool, firstAlfaNum: bool, hideAmbiguous: bool):
     """
     Generates a password of the desired length based on the passed parameters.
 
     Args:
-        passLen (int): password length
-        useDigits (bool): should the password use [0-9]
-        useLower (bool): should the password use [a-z]
-        useUpper (bool): should the password use [A-Z]
-        useSpecial (bool): should the password use special characters
-        firstAlfaNum (bool): Does the first digit of the password have to be alfanumeric (not symbol)
+        passlen (int): password length
+        usedigits (bool): should the password use [0-9]
+        uselower (bool): should the password use [a-z]
+        useupper (bool): should the password use [A-Z]
+        usespecial (bool): shoudl the password use special characters
+        firstAlfaNum (bool): Does the first digit of the password need to be alfanumeric (not symbol)
         hideAmbiguous (bool): Should characters that can be misread be dropped.
 
     Returns:
@@ -22,28 +22,25 @@ def passwdgen(passLen: int, useDigits: bool, useLower: bool, useUpper: bool, use
     
     output = ""
     symbol_pool = ""
-    if passLen < 1:
-        return output
     
-    if useDigits:
+    if usedigits:
         symbol_pool += string.digits
     
-    if useLower:
+    if uselower:
         symbol_pool += string.ascii_lowercase
     
-    if useUpper:
+    if useupper:
         symbol_pool += string.ascii_uppercase
     
     # The user's selection cannot generate the requested password
     if firstAlfaNum:
         if symbol_pool:
             output = "".join(random.sample(symbol_pool, 1))
-            passLen -= 1
+            passlen -= 1
         else:
-            # There are no characters to generate a password from
-            return output
+            return ""
         
-    if useSpecial:
+    if usespecial:
         symbol_pool += """`~!@#$%^&*()_-+={}[]\|:;"'<>,.?/"""
         
     if hideAmbiguous:
@@ -55,66 +52,24 @@ def passwdgen(passLen: int, useDigits: bool, useLower: bool, useUpper: bool, use
             if char in symbol_pool:
                 symbol_pool = symbol_pool.replace(char, '')
 
-    if symbol_pool:
-        return output + "".join(random.sample(symbol_pool, passLen)) if symbol_pool else ""
-    else:
-        # There are no characters to generate a password from
-        return output
+    return output + "".join(random.sample(symbol_pool, passlen)) if symbol_pool else ""
 
 
 class GUI:
     """
-    Handles the GUI interface mechanism
+    Handles the GUI interface
     """    
-
-    def GeneratePass(self):
-        """
-        Calls the function that generates a password and copies the same to the clipboard
-        """
-        generatedPass = passwdgen(
-                self.passLen.get(), 
-                self.digits.get(), 
-                self.lowChars.get(), 
-                self.upChars.get(), 
-                self.specChars.get(), 
-                self.fristAlfaNum.get(), 
-                self.hideAmbiguousChars.get()
-            )
-        self.passText.set(value=generatedPass)
-        pyperclip.copy(generatedPass)
-        
-      
-        
-    def ValidateIfNum(self, user_input, widget_name):
-        """
-        
-
-        Args:
-            user_input (_type_): _description_
-             widget_name (_type_): _description_
-
-        Returns:
-            _type_: _description_
-        """
-        # if the entered value is not a number reset it
-        if not user_input.isdigit():
-            self.passLen = IntVar(value=20)
-        return True
-
-
     def __init__(self):
-        """
-        Draws the screen and sets up the GUI
-        Manages the event for the Spinnerbox
+        """_summary_
         """        
         # root window
         self.root = Tk()
         self.root.title("Password Generator")
-        self.root.geometry("800x320")
+        self.root.geometry("800x300")
         self.root.resizable(width=FALSE, height=FALSE)
 
         # registering validation command
-        vldt_ifnum_cmd = (self.root.register(self.ValidateIfNum),'%P', '%W')
+        vldt_ifnum_cmd = (self.root.register(self.ValidateIfNum),'%P', '%S', '%W')
  
         # pass length information
         self.passTitle = Label(self.root, text = "Passowrd Length: ").grid(row=0, column=0, padx=5, pady=5, sticky=E)
@@ -127,7 +82,7 @@ class GUI:
             width=10, 
             justify=CENTER, 
             bd=3, 
-            validate='focusout', 
+            validate='key', 
             validatecommand=vldt_ifnum_cmd
             ).grid(row=0, column=1, padx=5, pady=5)
 
@@ -166,18 +121,46 @@ class GUI:
             self.fristAlfaNum.get(), 
             self.hideAmbiguousChars.get()
             )
-        pyperclip.copy(generatedPass)
+        # pyperclip.copy(generatedPass)
         self.passText = StringVar(value=generatedPass)
         self.genPassText = Entry(self.root, width=50, bd=3, font=('Bold'), textvariable=self.passText).grid(row=8, column=1, padx=5, pady=5)
         
         #load the icon
         self.copy_icon = PhotoImage(file='./Assets/copy.png')
         self.img_label = Label(image=self.copy_icon)
-        self.copyButton = Button(self.root, image=self.copy_icon, command=lambda:pyperclip.copy(self.passText.get())).grid(row=8, column=2)
+        self.copyButton = Button(self.root, image=self.copy_icon, command=lambda:self.genPassText.event_generate("<<Copy>>")).grid(row=8, column=2)
+
+
+    def GeneratePass(self):
+        generatedPass = passwdgen(
+                self.passLen.get(), 
+                self.digits.get(), 
+                self.lowChars.get(), 
+                self.upChars.get(), 
+                self.specChars.get(), 
+                self.fristAlfaNum.get(), 
+                self.hideAmbiguousChars.get()
+            )
+        self.passText.set(value=generatedPass)
+        pyperclip.copy(generatedPass)
         
-        # display note that text is automatically copied to the clipboard
-        self.img_label = Label(self.root, text = "Password copied to clipboard").grid(row=9, column=0, columnspan=3, padx=5, pady=5)
-        self.copyButton = Button(self.root, image=self.copy_icon, command=lambda:pyperclip.copy(self.passText.get())).grid(row=8, column=2)
+      
+        
+    def ValidateIfNum(self, user_input, new_value, widget_name):
+        # disallow anything but numbers in the input
+        valid = user_input.isdigit()
+        # now that we've ensured the input is only integers, range checking!
+        if valid:
+            # get minimum and maximum values of the widget to be validated
+            minval = int(self.root.nametowidget(widget_name).config('from')[4])
+            maxval = int(self.root.nametowidget(widget_name).config('to')[4])
+            # check if it's in range
+            if int(user_input) not in range (minval, maxval):
+                valid = False
+        if not valid:
+            self.root.bell()
+        return valid
+
 
 if __name__ == '__main__':
     mainwindow = GUI()

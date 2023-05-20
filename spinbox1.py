@@ -56,7 +56,7 @@ def passwdgen(passLen: int, useDigits: bool, useLower: bool, useUpper: bool, use
                 symbol_pool = symbol_pool.replace(char, '')
 
     if symbol_pool:
-        return output + "".join(random.sample(symbol_pool, passLen)) if symbol_pool else ""
+        return output + "".join(random.choices(symbol_pool, k=passLen)) if symbol_pool else ""
     else:
         # There are no characters to generate a password from
         return output
@@ -68,9 +68,6 @@ class GUI:
     """    
 
     def GeneratePass(self):
-        """
-        Calls the function that generates a password and copies the same to the clipboard
-        """
         generatedPass = passwdgen(
                 self.passLen.get(), 
                 self.digits.get(), 
@@ -85,27 +82,22 @@ class GUI:
         
       
         
-    def ValidateIfNum(self, user_input, widget_name):
-        """
-        
-
-        Args:
-            user_input (_type_): _description_
-             widget_name (_type_): _description_
-
-        Returns:
-            _type_: _description_
-        """
-        # if the entered value is not a number reset it
-        if not user_input.isdigit():
-            self.passLen = IntVar(value=20)
-        return True
-
+    def ValidateIfNum(self):
+        user_input = self.passLen.get()
+        # disallow anything but numbers in the input
+        valid = isinstance(user_input, int)
+        # perform range checking
+        # if valid:
+        #     # get minimum and maximum values of the widget to be validated
+        #     minval = int(self.passLenSb.config('from_')[4])
+        #     maxval = int(self.passLenSb.config('to')[4])
+        #     # check if it's in range
+        #     if user_input not in range (minval, maxval):
+        #         valid = False
+        return valid
 
     def __init__(self):
-        """
-        Draws the screen and sets up the GUI
-        Manages the event for the Spinnerbox
+        """_summary_
         """        
         # root window
         self.root = Tk()
@@ -113,9 +105,6 @@ class GUI:
         self.root.geometry("800x320")
         self.root.resizable(width=FALSE, height=FALSE)
 
-        # registering validation command
-        vldt_ifnum_cmd = (self.root.register(self.ValidateIfNum),'%P', '%W')
- 
         # pass length information
         self.passTitle = Label(self.root, text = "Passowrd Length: ").grid(row=0, column=0, padx=5, pady=5, sticky=E)
         self.passLen = IntVar(value=20)
@@ -127,8 +116,7 @@ class GUI:
             width=10, 
             justify=CENTER, 
             bd=3, 
-            validate='focusout', 
-            validatecommand=vldt_ifnum_cmd
+            command=self.ValidateIfNum
             ).grid(row=0, column=1, padx=5, pady=5)
 
         self.digitsLabel = Label(self.root, text = "Use Numbers: ").grid(row=1, column=0, padx=5, pady=5, sticky=E)
@@ -178,6 +166,7 @@ class GUI:
         # display note that text is automatically copied to the clipboard
         self.img_label = Label(self.root, text = "Password copied to clipboard").grid(row=9, column=0, columnspan=3, padx=5, pady=5)
         self.copyButton = Button(self.root, image=self.copy_icon, command=lambda:pyperclip.copy(self.passText.get())).grid(row=8, column=2)
+
 
 if __name__ == '__main__':
     mainwindow = GUI()
