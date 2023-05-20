@@ -1,7 +1,23 @@
 from tkinter import *
-import random, string
+import random, string, pyperclip
+
 
 def passwdgen(passlen: int, usedigits: bool, uselower: bool, useupper: bool, usespecial: bool, firstAlfaNum: bool, hideAmbiguous: bool):
+    """
+    Generates a password of the desired length based on the passed parameters.
+
+    Args:
+        passlen (int): password length
+        usedigits (bool): should the password use [0-9]
+        uselower (bool): should the password use [a-z]
+        useupper (bool): should the password use [A-Z]
+        usespecial (bool): shoudl the password use special characters
+        firstAlfaNum (bool): Does the first digit of the password need to be alfanumeric (not symbol)
+        hideAmbiguous (bool): Should characters that can be misread be dropped.
+
+    Returns:
+        string: generated_password
+    """
     random.seed()
     
     output = ""
@@ -40,11 +56,16 @@ def passwdgen(passlen: int, usedigits: bool, uselower: bool, useupper: bool, use
 
 
 class GUI:
+    """
+    Handles the GUI interface
+    """    
     def __init__(self):
+        """_summary_
+        """        
         # root window
         self.root = Tk()
         self.root.title("Password Generator")
-        self.root.geometry("800x280")
+        self.root.geometry("800x300")
         self.root.resizable(width=FALSE, height=FALSE)
 
         # registering validation command
@@ -91,7 +112,7 @@ class GUI:
         
         # pass length information
         self.genPassButton = Button(self.root, text = "Generate Password", command=self.GeneratePass).grid(row=8, column=0, padx=5, pady=5)
-        self.passText = StringVar(value=passwdgen(
+        generatedPass = passwdgen(
             self.passLen.get(), 
             self.digits.get(), 
             self.lowChars.get(), 
@@ -99,7 +120,9 @@ class GUI:
             self.specChars.get(), 
             self.fristAlfaNum.get(), 
             self.hideAmbiguousChars.get()
-            ))
+            )
+        # pyperclip.copy(generatedPass)
+        self.passText = StringVar(value=generatedPass)
         self.genPassText = Entry(self.root, width=50, bd=3, font=('Bold'), textvariable=self.passText).grid(row=8, column=1, padx=5, pady=5)
         
         #load the icon
@@ -109,8 +132,7 @@ class GUI:
 
 
     def GeneratePass(self):
-        self.passText.set(
-            value=passwdgen(
+        generatedPass = passwdgen(
                 self.passLen.get(), 
                 self.digits.get(), 
                 self.lowChars.get(), 
@@ -119,7 +141,8 @@ class GUI:
                 self.fristAlfaNum.get(), 
                 self.hideAmbiguousChars.get()
             )
-        )
+        self.passText.set(value=generatedPass)
+        pyperclip.copy(generatedPass)
         
       
         
