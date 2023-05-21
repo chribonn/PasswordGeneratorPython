@@ -110,7 +110,7 @@ class GUI:
         else:
             # change focus to correct the invalid content of the spinbox
             generatedPass=''
-            self.passLen.set(20)
+            self.passLen.set(self.last_valid_passLen)
             self.root.focus()
 
         self.passText.set(value=generatedPass)
@@ -126,7 +126,11 @@ class GUI:
         Returns:
             boolean: Whether the value is valid
         """
-        return self.spinbox_valid(widget_name)
+        valid = self.spinbox_valid(widget_name)
+        if valid:
+            self.last_valid_passLen = int(self.passLen.get())
+            
+        return valid
 
 
  
@@ -143,7 +147,7 @@ class GUI:
         valid = self.spinbox_valid('!spinbox')
         
         if not valid:
-            self.passLen.set(20)
+            self.passLen.set(self.last_valid_passLen)
 
         self.root.focus()
         return valid
@@ -153,6 +157,10 @@ class GUI:
         Draws the screen and sets up the GUI
         Manages the event for the Spinnerbox
         """        
+
+        # Retains the last valid passLen in case it needs to be reset
+        self.last_valid_passLen = 20
+  
         # root window
         self.root = Tk()
         self.root.title("Password Generator")
@@ -161,6 +169,7 @@ class GUI:
         self.root.iconbitmap("./Assets/PassGenerator.ico")
         
         self.root.bind('<Return>', self.reset_focus)
+        self.root.bind('<Tab>', self.reset_focus)
 
         # registering validation command
         vldt_ifnum_cmd = (self.root.register(self.ValidateIfNum),'%P', '%W')
