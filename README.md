@@ -19,4 +19,5 @@ The password is copied to the clipboard for easy pasting.
 
 The Generate Password button is used to produce a new password.
 
-Generated passwords are automatically copied to the clipboard making the copy icon redundant.
+On Windows and Mac systems the generated passwords are automatically copied to the clipboard making the copy icon redundant.
+On Linux systems a **Not implemented error** could be thrown.  The utility should work around this limitation.  For information on how to install this functionality visit pyperclip's page at [Welcome to Pyperclip’s documentation!](https://pyperclip.readthedocs.io/en/latest/) 
