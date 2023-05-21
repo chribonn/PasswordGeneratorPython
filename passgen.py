@@ -1,5 +1,6 @@
 from tkinter import *
 import random, string, pyperclip
+import platform
 
 
 def passwdgen(passLen: int, useDigits: bool, useLower: bool, useUpper: bool, useSpecial: bool, firstAlfaNum: bool, hideAmbiguous: bool):
@@ -166,8 +167,9 @@ class GUI:
         self.root.title("Password Generator")
         self.root.geometry("800x320")
         self.root.resizable(width=FALSE, height=FALSE)
-        self.root.iconbitmap("./Assets/PassGenerator.ico")
-        
+        if platform.system() == 'Windows':
+            self.root.iconbitmap("./Assets/PassGenerator.ico")
+
         self.root.bind('<Return>', self.reset_focus)
         self.root.bind('<Tab>', self.reset_focus)
 
