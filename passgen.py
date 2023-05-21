@@ -135,7 +135,7 @@ class GUI:
             width=5, 
             justify=CENTER, 
             bd=3, 
-            validate='all', 
+            validate='key', 
             validatecommand=vldt_ifnum_cmd
             ).grid(row=0, column=1, padx=5, pady=5)
 
@@ -164,7 +164,7 @@ class GUI:
         Checkbutton(self.root, width=10, variable=self.hideAmbiguousChars).grid(row=6, column=1)
         
         # pass length information
-        self.genPassButton = Button(self.root, text = "Generate Password", command=self.GeneratePass).grid(row=8, column=0, padx=5, pady=5)
+        self.genPassButton = Button(self.root, text = "Regenerate Password", command=self.GeneratePass).grid(row=8, column=0, padx=5, pady=5)
         generatedPass = passwdgen(
             self.passLen.get(), 
             self.digits.get(), 
