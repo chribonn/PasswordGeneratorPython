@@ -56,7 +56,7 @@ def passwdgen(passLen: int, useDigits: bool, useLower: bool, useUpper: bool, use
                 symbol_pool = symbol_pool.replace(char, '')
 
     if symbol_pool:
-        return output + "".join(random.sample(symbol_pool, passLen)) if symbol_pool else ""
+        return output + "".join(random.choices(symbol_pool, k=passLen)) if symbol_pool else ""
     else:
         # There are no characters to generate a password from
         return output
@@ -87,20 +87,26 @@ class GUI:
         
     def ValidateIfNum(self, user_input, widget_name):
         """
-        
-
         Args:
-            user_input (_type_): _description_
-             widget_name (_type_): _description_
+            user_input (IntVal): The value typed into the spinbox
+            widget_name (): The widget name
 
         Returns:
-            _type_: _description_
+            Boolean: Whether the value is valid
         """
-        # if the entered value is not a number reset it
-        if not user_input.isdigit():
-            self.passLen = IntVar(value=20)
-        return True
-
+        
+        valid = user_input.isdigit()
+        # now that we've ensured the input is only integers, range checking!
+        if valid:
+            # get minimum and maximum values of the widget to be validated
+            minval = int(self.root.nametowidget(widget_name).config('from')[4])
+            maxval = int(self.root.nametowidget(widget_name).config('to')[4])
+            # check if it's in range
+            if int(user_input) not in range (minval, maxval):
+                valid = False
+            
+        return valid
+ 
 
     def __init__(self):
         """
@@ -112,6 +118,7 @@ class GUI:
         self.root.title("Password Generator")
         self.root.geometry("800x320")
         self.root.resizable(width=FALSE, height=FALSE)
+        self.root.iconbitmap("./Assets/PassGenerator.ico")
 
         # registering validation command
         vldt_ifnum_cmd = (self.root.register(self.ValidateIfNum),'%P', '%W')
@@ -121,13 +128,14 @@ class GUI:
         self.passLen = IntVar(value=20)
         self.passLenSb = Spinbox(
             self.root, 
+            textvariable=self.passLen, 
             from_=1, 
             to=100, 
-            textvariable=self.passLen, 
-            width=10, 
+            increment=1,
+            width=5, 
             justify=CENTER, 
             bd=3, 
-            validate='focusout', 
+            validate='all', 
             validatecommand=vldt_ifnum_cmd
             ).grid(row=0, column=1, padx=5, pady=5)
 
