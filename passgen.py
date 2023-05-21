@@ -210,7 +210,7 @@ class GUI:
         self.fristAlfaNum = IntVar(value=1)
         Checkbutton(self.root, width=10, variable=self.fristAlfaNum).grid(row=5, column=1)
 
-        self.hideAmbiguousLabel = Label(self.root, text = "Avoid Confusing Characters: ").grid(row=6, column=0, padx=5, pady=5, sticky=E)
+        self.hideAmbiguousLabel = Label(self.root, text = "Avoid confusing characters: ").grid(row=6, column=0, padx=5, pady=5, sticky=E)
         self.hideAmbiguousChars = IntVar(value=0)
         Checkbutton(self.root, width=10, variable=self.hideAmbiguousChars).grid(row=6, column=1)
         
