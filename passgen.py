@@ -88,8 +88,8 @@ class GUI:
     def ValidateIfNum(self, user_input, widget_name):
         """
         Args:
-            user_input (IntVal): The value typed into the spinbox
-            widget_name (): The widget name
+            user_input (str): The value typed into the spinbox
+            widget_name (str): The widget name
 
         Returns:
             Boolean: Whether the value is valid
