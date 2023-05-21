@@ -65,24 +65,56 @@ def passwdgen(passLen: int, useDigits: bool, useLower: bool, useUpper: bool, use
 class GUI:
     """
     Handles the GUI interface mechanism
-    """    
+    """ 
+    
+    def spinbox_valid(self, widget_name):
+        """Returns whether the contents of the spinbox are valid
+
+        Args:
+            widget_name (str): the internal Tcl name of the spinbox
+
+        Returns:
+            boolean: contents are valid
+        """
+        try:
+            user_input = self.passLen.get()
+            valid = isinstance(user_input, int)
+        except:
+            valid = False
+        # now that we've ensured the input is only integers, range checking!
+        if valid:
+            # get minimum and maximum values of the widget to be validated
+            minval = int(self.root.nametowidget(widget_name).config('from')[4])
+            maxval = int(self.root.nametowidget(widget_name).config('to')[4])
+            # check if it's in range
+            if int(user_input) not in range (minval, maxval):
+                valid = False
+        return valid       
 
     def GeneratePass(self):
         """
-        Calls the function that generates a password and copies the same to the clipboard
+        Calls the function that generates a password and copies the same to the clipboard. 
+        If there is an issue the password is cleared and the spinbox is reset
         """
-        generatedPass = passwdgen(
-                self.passLen.get(), 
-                self.digits.get(), 
-                self.lowChars.get(), 
-                self.upChars.get(), 
-                self.specChars.get(), 
-                self.fristAlfaNum.get(), 
-                self.hideAmbiguousChars.get()
-            )
+        
+        if self.spinbox_valid('!spinbox'):
+            generatedPass = passwdgen(
+                    self.passLen.get(), 
+                    self.digits.get(), 
+                    self.lowChars.get(), 
+                    self.upChars.get(), 
+                    self.specChars.get(), 
+                    self.fristAlfaNum.get(), 
+                    self.hideAmbiguousChars.get()
+                )
+        else:
+            # change focus to correct the invalid content of the spinbox
+            generatedPass=''
+            self.passLen.set(20)
+            self.root.focus()
+
         self.passText.set(value=generatedPass)
         pyperclip.copy(generatedPass)
-        
       
         
     def ValidateIfNum(self, user_input, widget_name):
@@ -92,22 +124,30 @@ class GUI:
             widget_name (str): The widget name
 
         Returns:
-            Boolean: Whether the value is valid
+            boolean: Whether the value is valid
+        """
+        return self.spinbox_valid(widget_name)
+
+
+ 
+    def reset_focus(self, event):
+        """Validates whether the number is valid.  If it isn't it resets the value
+
+        Args:
+            event (event): Event being captured
+
+        Returns:
+            boolean: was spinbox content valid
         """
         
-        valid = user_input.isdigit()
-        # now that we've ensured the input is only integers, range checking!
-        if valid:
-            # get minimum and maximum values of the widget to be validated
-            minval = int(self.root.nametowidget(widget_name).config('from')[4])
-            maxval = int(self.root.nametowidget(widget_name).config('to')[4])
-            # check if it's in range
-            if int(user_input) not in range (minval, maxval):
-                valid = False
-            
-        return valid
- 
+        valid = self.spinbox_valid('!spinbox')
+        
+        if not valid:
+            self.passLen.set(20)
 
+        self.root.focus()
+        return valid
+       
     def __init__(self):
         """
         Draws the screen and sets up the GUI
@@ -119,6 +159,8 @@ class GUI:
         self.root.geometry("800x320")
         self.root.resizable(width=FALSE, height=FALSE)
         self.root.iconbitmap("./Assets/PassGenerator.ico")
+        
+        self.root.bind('<Return>', self.reset_focus)
 
         # registering validation command
         vldt_ifnum_cmd = (self.root.register(self.ValidateIfNum),'%P', '%W')
@@ -135,7 +177,7 @@ class GUI:
             width=5, 
             justify=CENTER, 
             bd=3, 
-            validate='key', 
+            validate='focus', 
             validatecommand=vldt_ifnum_cmd
             ).grid(row=0, column=1, padx=5, pady=5)
 
@@ -185,7 +227,6 @@ class GUI:
         
         # display note that text is automatically copied to the clipboard
         self.img_label = Label(self.root, text = "Password copied to clipboard").grid(row=9, column=0, columnspan=3, padx=5, pady=5)
-        self.copyButton = Button(self.root, image=self.copy_icon, command=lambda:pyperclip.copy(self.passText.get())).grid(row=8, column=2)
 
 if __name__ == '__main__':
     mainwindow = GUI()
