@@ -180,7 +180,7 @@ class GUI:
         self.root = Tk()
         self.root.title("Password Generator")
         self.root.geometry("800x320")
-        self.root.resizable(width=FALSE, height=FALSE)
+        self.root.resizable(width=TRUE, height=TRUE)
         if platform.system() == 'Windows':
             self.root.iconbitmap("./Assets/PassGenerator.ico")
 
