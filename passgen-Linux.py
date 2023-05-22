@@ -119,11 +119,9 @@ class GUI:
         self.passText.set(value=generatedPass)
 
         # A Linux system may throw en error as the copy/paste may not exist out of hte box
-        try:
+        if self.pyperclip_works:
             pyperclip.copy(generatedPass)
-        except:
-            pass
-      
+     
         
     def ValidateIfNum(self, user_input, widget_name):
         """
@@ -165,6 +163,15 @@ class GUI:
         Draws the screen and sets up the GUI
         Manages the event for the Spinnerbox
         """        
+
+        self.pyperclip_works = True
+        
+        if platform.system() == 'Linux':
+            # If this Linux, check if pyperclip can copy
+            try:
+                pyperclip.copy(' ')
+            except:
+                self.pyperclip_works = False
 
         # Retains the last valid passLen in case it needs to be reset
         self.last_valid_passLen = 20
@@ -235,21 +242,23 @@ class GUI:
             self.hideAmbiguousChars.get()
             )
         
-        # A Linux system may throw en error as the copy/paste may not exist out of hte box
-        try:
-            pyperclip.copy(generatedPass)
-        except:
-            pass
         self.passText = StringVar(value=generatedPass)
         self.genPassText = Entry(self.root, width=50, bd=3, font=('Bold'), textvariable=self.passText).grid(row=8, column=1, padx=5, pady=5)
         
-        #load the icon
-        self.copy_icon = PhotoImage(file='./Assets/copy.png')
-        self.img_label = Label(image=self.copy_icon)
-        self.copyButton = Button(self.root, image=self.copy_icon, command=lambda:pyperclip.copy(self.passText.get())).grid(row=8, column=2)
-        
-        # display note that text is automatically copied to the clipboard
-        self.img_label = Label(self.root, text = "Password copied to clipboard").grid(row=9, column=0, columnspan=3, padx=5, pady=5)
+        # A Linux system may throw en error as the copy/paste functionality may not exist out of the box
+        if self.pyperclip_works:
+            pyperclip.copy(generatedPass)
+
+            #load the icon
+            self.copy_icon = PhotoImage(file='./Assets/copy.png')
+            self.img_label = Label(image=self.copy_icon)
+            self.copyButton = Button(self.root, image=self.copy_icon, command=lambda:pyperclip.copy(self.passText.get())).grid(row=8, column=2)
+
+            # display note that text is automatically copied to the clipboard
+            self.img_label = Label(self.root, text = "Password copied to clipboard").grid(row=9, column=0, columnspan=3, padx=5, pady=5)
+        else:
+            # display note that text is automatically copied to the clipboard
+            self.img_label = Label(self.root, text = "Highlight and copy text").grid(row=9, column=0, columnspan=3, padx=5, pady=5)
 
 if __name__ == '__main__':
     mainwindow = GUI()
